@@ -152,6 +152,7 @@ class BBCode
         /** @var Tag|null $tag */
         $tag      = null;
         $openTags = array();
+        $content = null;
 
         /*
          * Loop over each character of the text
@@ -213,6 +214,11 @@ class BBCode
                             continue;
                         }
 
+                        // get content
+                        if ($inStr) {
+                            $tag->content .= $char;
+                        }
+
                         if ($inName and ! $inStr) {
                             /*
                              * This makes the current tag a closing tag
@@ -266,7 +272,7 @@ class BBCode
             $closingTag = new Tag($name, false);
 
             foreach ($openTagsByType as $openTag) {
-                $html .= $this->generateTag($closingTag, $html, $openTag);
+                $html .= $this->generateTag($closingTag, $html, $openTag, $content);
             }
         }
 
@@ -282,7 +288,7 @@ class BBCode
      * @param  Tag[]    $openTags   Array with tags that are opned but not closed
      * @return string
      */
-    protected function generateTag(Tag $tag, &$html, Tag $openingTag = null, array $openTags = [])
+    protected function generateTag(Tag $tag, &$html, Tag $openingTag = null, array $openTags = [], $content)
     {
         $code = null;
 
